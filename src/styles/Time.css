@@ -1,0 +1,30 @@
+.timestamp {
+    position: relative;
+    cursor: default;
+}
+
+.timestamp::before,
+.timestamp::after {
+    --scale: 0;
+    position: absolute;
+    top: -.25rem;
+    left: 50%;
+    background: black;
+    transform: translateX(-50%) translateY(-100%) scale(var(--scale));
+    transition: 150ms;
+    transform-origin: bottom;
+}
+
+.timestamp::before {
+    content: attr(data-tooltip);
+    color: white;
+    padding: .5rem;
+    border-radius: .3rem;
+    text-align: center;
+    width: max-content;
+    background: #333;
+}
+
+.timestamp:hover::before {
+    --scale: 1;
+}

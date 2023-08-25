@@ -1,0 +1,17 @@
+.message-input {
+    font-size: 1.3rem;
+    height: 3.2rem;
+    width: 100%;
+    resize: none;
+    transition: 700ms;
+    border-radius: var(--bs-border-radius-lg);
+    padding: 7px;
+    transition-timing-function: cubic-bezier(0.75, 0, 0.25, 1);
+    box-shadow: var(--bs-box-shadow);
+    border-width: 0;
+    outline: none;
+}
+
+.message-input:focus {
+    height: 7.5rem;
+}

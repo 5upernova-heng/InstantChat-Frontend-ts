@@ -1,0 +1,10 @@
+.avatar {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 250ms;
+}
+
+.avatar:hover {
+    border-radius: 20%;
+    transition: 250ms;
+}
