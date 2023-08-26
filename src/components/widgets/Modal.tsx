@@ -9,7 +9,7 @@ type Props = {
     footerComponent?: React.ReactNode,
 };
 
-const Modal = ({id, size, headerLabel, bodyComponent, footerComponent}: Props) => {
+function Modal({id, size, headerLabel, bodyComponent, footerComponent}: Props) {
     return (
         <div className="modal fade" tabIndex={-1} id={id} aria-hidden="true">
             <div className={`modal-dialog modal-${size}`}>
@@ -29,6 +29,6 @@ const Modal = ({id, size, headerLabel, bodyComponent, footerComponent}: Props) =
             </div>
         </div>
     );
-};
+}
 
 export default Modal;

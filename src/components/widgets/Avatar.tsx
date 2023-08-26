@@ -10,7 +10,7 @@ type Props = {
 }
 
 function Avatar({name, size, color, textColor}: Props) {
-    const hashCodeColor = (name: string) => {
+    function hashCodeColor(name: string) {
         let hash = 0;
         for (let i = 0, len = name.length; i < len; i++) {
             hash = (hash * 31) + name.charCodeAt(i);
@@ -18,6 +18,7 @@ function Avatar({name, size, color, textColor}: Props) {
         const index = hash % STYLE.backgroundColors.length;
         return STYLE.backgroundColors[index];
     }
+
     return (
         <div className="avatar d-flex justify-content-center align-items-center shadow" style={{
             backgroundColor: `${color || hashCodeColor(name)}`,

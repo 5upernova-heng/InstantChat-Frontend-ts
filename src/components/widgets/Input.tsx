@@ -9,7 +9,8 @@ type Props = {
     value?: string,
     error?: string,
 };
-const Input = ({name, icon, label, value, type, onChange, error}: Props) => {
+
+function Input({name, icon, label, value, type, onChange, error}: Props) {
     return (
         <>
             <label className="fw-bold  mb-1" htmlFor={name}>
@@ -36,7 +37,7 @@ const Input = ({name, icon, label, value, type, onChange, error}: Props) => {
             )}
         </>
     );
-};
+}
 
 
 export default Input;
