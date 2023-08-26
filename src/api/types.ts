@@ -29,10 +29,16 @@ export enum MessageType {single, group}
 
 export type Message = {
     id1: number // sender
-    id2?: number // receiver, empty if it's a group message
+    id2: number // receiver, empty if it's a group message
     type?: MessageType
     messageText: string
     messageTime: string
+}
+
+export type Chat = {
+    id: number
+    type: MessageType
+    name: string
 }
 
 export type ApiResponse<DataType> = {

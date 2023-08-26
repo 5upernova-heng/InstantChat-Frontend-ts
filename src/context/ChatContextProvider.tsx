@@ -1,4 +1,4 @@
-import {Action, Group, GroupLevel, Message, MessageType, User} from "api/types.ts";
+import {Action, Chat, Group, GroupLevel, Message, MessageType, User} from "api/types.ts";
 import {useLoginContext, useTimeContext} from "context/hooks.ts";
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import {toast} from "react-toastify";
@@ -18,6 +18,7 @@ type NewMessage = {
     messageText: string
     messageTime: string
 }
+
 
 export type ChatContextType = {
     // data
@@ -46,8 +47,8 @@ export type ChatContextType = {
     setMode: Dispatch<SetStateAction<MessageType>>
     conversation: number
     setConversation: Dispatch<SetStateAction<number>>
-    chats: Array<User | Group>
-    setChats: Dispatch<SetStateAction<Array<User | Group>>>
+    chats: Chat[]
+    setChats: Dispatch<SetStateAction<Chat[]>>
 }
 
 
@@ -66,7 +67,7 @@ function ChatContextProvider({children}: Props) {
     const [allGroups, setAllGroups] = useState<Group[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessages, setNewMessages] = useState<NewMessage[]>([]);
-    const [chats, setChats] = useState<Array<User | Group>>([]);
+    const [chats, setChats] = useState<Chat[]>([]);
     const [friendRequests, setFriendRequests] = useState<User[]>([]);
 
     // conversation

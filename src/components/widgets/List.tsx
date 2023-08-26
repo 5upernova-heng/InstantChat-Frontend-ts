@@ -1,12 +1,12 @@
-import React from "react";
+import Element = React.JSX.Element;
 
-type Props = {
+type Props<T> = {
     title: string
-    data: []
-    renderMethod: () => React.ReactNode
+    data: T[]
+    renderMethod: (item: T, index: number) => Element
 }
 
-function List({title, data, renderMethod}: Props) {
+function List<T>({title, data, renderMethod}: Props<T>) {
     const fontStyle = "fw-bold fs-5 mb-0";
 
     function renderData() {
