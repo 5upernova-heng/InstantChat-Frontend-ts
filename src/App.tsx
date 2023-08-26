@@ -1,10 +1,10 @@
+import ChatContextProvider from "/src/context/ChatContextProvider.jsx";
+import LoginContextProvider from "/src/context/LoginContextProvider.jsx";
+import TimeContextProvider from "/src/context/TimeContextProvider.jsx";
+import Chat from "/src/pages/Chat.tsx";
+import Login from "/src/pages/Login.tsx";
+import Register from "/src/pages/Register.tsx";
 import "/src/styles/App.css"
-import ChatContextProvider from "context/ChatContextProvider.jsx";
-import LoginContextProvider from "context/LoginContextProvider.jsx";
-import TimeContextProvider from "context/TimeContextProvider.jsx";
-import Chat from "pages/Chat.tsx";
-import Login from "pages/Login.tsx";
-import Register from "pages/Register.tsx";
 import {useState} from "react";
 import {Navigate, Route, Routes} from "react-router-dom";
 

@@ -1,5 +1,5 @@
-import STYLE, {SizeType} from 'style.ts'
-import "/styles/Avatar.css"
+import STYLE, {SizeType} from '/src/style.ts'
+import "/src/styles/Avatar.css"
 
 type Props = {
     name: string

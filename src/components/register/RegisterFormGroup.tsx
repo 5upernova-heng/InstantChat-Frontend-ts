@@ -1,7 +1,6 @@
-import {register} from "api/registerApi.js";
-import {RegisterForm} from "api/types.ts";
-
-import Input from "components/widgets/Input";
+import {register} from "/src/api/registerApi.js";
+import {RegisterForm} from "/src/api/types.ts";
+import Input from "/src/components/widgets/Input";
 import Joi from "joi";
 import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";

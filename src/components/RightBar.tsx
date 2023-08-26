@@ -1,10 +1,10 @@
 // 上方用于显示好友请求
 // 下方用于显示成员信息
 
-import {Group, MessageType, User} from "api/types.ts";
-import Avatar from "components/widgets/Avatar.jsx";
-import UserCard from "components/widgets/UserCard.jsx";
-import {useChatContext, useLoginContext} from "context/hooks.ts";
+import {Group, MessageType, User} from "/src/api/types.ts";
+import Avatar from "/src/components/widgets/Avatar.jsx";
+import UserCard from "/src/components/widgets/UserCard.jsx";
+import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
 import {useEffect, useState} from "react";
 
 function RightBar() {

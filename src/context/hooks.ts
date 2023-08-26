@@ -1,6 +1,6 @@
-import {ChatContext, ChatContextType} from "context/ChatContextProvider.tsx";
-import {LoginContext, LoginContextType} from "context/LoginContextProvider.tsx";
-import {TimeContext, TimeContextType} from "context/TimeContextProvider.tsx";
+import {ChatContext, ChatContextType} from "/src/context/ChatContextProvider.tsx";
+import {LoginContext, LoginContextType} from "/src/context/LoginContextProvider.tsx";
+import {TimeContext, TimeContextType} from "/src/context/TimeContextProvider.tsx";
 import {useContext} from "react";
 
 export function useTimeContext(): TimeContextType {

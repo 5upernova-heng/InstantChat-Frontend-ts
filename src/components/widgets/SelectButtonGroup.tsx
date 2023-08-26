@@ -1,4 +1,4 @@
-import {ButtonStyle} from "style.ts";
+import {ButtonStyle} from "/src/style.ts";
 
 type Props = {
     buttonsInfo: ButtonStyle[]

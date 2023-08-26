@@ -1,5 +1,5 @@
-import {Action, Chat, Group, GroupLevel, Message, MessageType, User} from "api/types.ts";
-import {useLoginContext, useTimeContext} from "context/hooks.ts";
+import {Action, Chat, Group, GroupLevel, Message, MessageType, User} from "/src/api/types.ts";
+import {useLoginContext, useTimeContext} from "/src/context/hooks.ts";
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {getRequest, handleRequestApi, listAllUsers, listFriends} from "../api/friendApi.js";

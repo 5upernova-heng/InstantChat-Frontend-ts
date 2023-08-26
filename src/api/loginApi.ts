@@ -1,6 +1,6 @@
-import request from "api/request";
-import {Account, ApiResponse, User} from "api/types.ts";
-import {apiRoot} from "config.json";
+import request from "/src/api/request";
+import {Account, ApiResponse, User} from "/src/api/types.ts";
+import {apiRoot} from "/src/config.json";
 
 
 export async function login(account: Account): Promise<ApiResponse<{ user: User, jwt: string }>> {

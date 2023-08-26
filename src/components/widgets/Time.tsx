@@ -1,4 +1,4 @@
-import "styles/Time.css"
+import "/src/styles/Time.css"
 
 function Time({timeStr}: { timeStr: string }) {
     const [date, time] = timeStr.split("T");

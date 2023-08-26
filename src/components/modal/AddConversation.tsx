@@ -1,8 +1,8 @@
-import {friendRequest} from "api/friendApi";
-import {Group, MessageType, User} from "api/types.ts";
-import List from "components/widgets/List.tsx";
-import UserCard from "components/widgets/UserCard.tsx";
-import {useChatContext, useLoginContext} from "context/hooks.ts";
+import {friendRequest} from "/src/api/friendApi";
+import {Group, MessageType, User} from "/src/api/types.ts";
+import List from "/src/components/widgets/List.tsx";
+import UserCard from "/src/components/widgets/UserCard.tsx";
+import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 

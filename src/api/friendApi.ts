@@ -1,6 +1,6 @@
-import request from "api/request";
-import {Action, ApiResponse, User} from "api/types.ts";
-import {apiRoot} from "config.json";
+import request from "/src/api/request";
+import {Action, ApiResponse, User} from "/src/api/types.ts";
+import {apiRoot} from "/src/config.json";
 
 export async function friendRequest(friendId: number, token: string): Promise<ApiResponse<null>> {
     console.log("API Called: friendRequest\n", friendId);

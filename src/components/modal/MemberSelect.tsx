@@ -1,5 +1,5 @@
-import {User} from "api/types.ts";
-import {useChatContext} from "context/hooks.ts";
+import {User} from "/src/api/types.ts";
+import {useChatContext} from "/src/context/hooks.ts";
 
 type Props = {
     members: number[]

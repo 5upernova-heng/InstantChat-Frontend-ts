@@ -1,6 +1,6 @@
-import request from "api/request";
-import {ApiResponse, Message, User} from "api/types.ts";
-import {apiRoot} from "config.json";
+import request from "/src/api/request";
+import {ApiResponse, Message, User} from "/src/api/types.ts";
+import {apiRoot} from "/src/config.json";
 
 export async function sendMessage(friendId: number, message: string, token: string): Promise<ApiResponse<null>> {
     console.log("API Called: sendMessage\n", friendId, message);

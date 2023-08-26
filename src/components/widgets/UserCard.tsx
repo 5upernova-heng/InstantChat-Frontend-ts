@@ -1,4 +1,4 @@
-import Avatar from "components/widgets/Avatar.jsx";
+import Avatar from "/src/components/widgets/Avatar.jsx";
 
 type Props = { name: string }
 

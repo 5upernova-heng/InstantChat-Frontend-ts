@@ -1,4 +1,4 @@
-import RegisterFormGroup from "components/register/RegisterFormGroup.jsx";
+import RegisterFormGroup from "/src/components/register/RegisterFormGroup.jsx";
 import {Link} from "react-router-dom";
 
 function Register() {

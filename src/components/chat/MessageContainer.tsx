@@ -1,6 +1,6 @@
-import {MessageType} from "api/types.ts";
-import Message from "components/widgets/Message.jsx";
-import {useChatContext, useLoginContext} from "context/hooks.ts";
+import {MessageType} from "/src/api/types.ts";
+import Message from "/src/components/widgets/Message.jsx";
+import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
 import {useEffect, useState} from "react";
 
 type ParsedMessage = {

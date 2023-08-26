@@ -1,6 +1,6 @@
-import {Account} from "api/types.ts";
-import Input from "components/widgets/Input";
-import {useLoginContext} from "context/hooks.ts";
+import {Account} from "/src/api/types.ts";
+import Input from "/src/components/widgets/Input";
+import {useLoginContext} from "/src/context/hooks.ts";
 import Joi from "joi";
 import {ChangeEvent, useState} from "react";
 

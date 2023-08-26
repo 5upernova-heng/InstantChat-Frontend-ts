@@ -1,7 +1,7 @@
-import {Chat} from "api/types.ts";
+import {Chat} from "/src/api/types.ts";
+import Avatar from "/src/components/widgets/Avatar.jsx";
+import {useChatContext} from "/src/context/hooks.ts";
 import {Modal} from "bootstrap"
-import Avatar from "components/widgets/Avatar.jsx";
-import {useChatContext} from "context/hooks.ts";
 import {useEffect} from "react";
 
 function SideBar() {

@@ -1,4 +1,4 @@
-import LoginFormGroup from "components/login/LoginFormGroup.jsx";
+import LoginFormGroup from "/src/components/login/LoginFormGroup.jsx";
 import {Link} from "react-router-dom";
 
 function Login() {

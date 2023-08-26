@@ -1,4 +1,4 @@
-import {SizeType} from "../../style.ts";
+import {SizeType} from "/src/style.ts";
 import React from "react";
 
 type Props = {

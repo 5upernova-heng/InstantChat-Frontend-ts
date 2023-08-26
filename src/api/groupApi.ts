@@ -1,6 +1,6 @@
-import request from "api/request";
-import {ApiResponse, Group, GroupLevel, User} from "api/types.ts";
-import {apiRoot} from "config.json";
+import request from "/src/api/request";
+import {ApiResponse, Group, GroupLevel, User} from "/src/api/types.ts";
+import {apiRoot} from "/src/config.json";
 
 
 export async function creatGroup(name: string, level: GroupLevel, members: number[], token: string):

@@ -1,5 +1,5 @@
-import Avatar from "components/widgets/Avatar.jsx";
-import {useLoginContext} from "context/hooks.ts";
+import Avatar from "/src/components/widgets/Avatar.jsx";
+import {useLoginContext} from "/src/context/hooks.ts";
 
 
 function TopBar() {

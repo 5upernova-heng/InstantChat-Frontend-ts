@@ -1,6 +1,6 @@
-import {login} from "api/loginApi.js";
-import {Account, User} from "api/types.ts";
-import {useTimeContext} from "context/hooks.ts";
+import {login} from "/src/api/loginApi.js";
+import {Account, User} from "/src/api/types.ts";
+import {useTimeContext} from "/src/context/hooks.ts";
 import {createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";

@@ -1,6 +1,6 @@
+import {sendGroupMessage, sendMessage} from "/src/api/messageApi.js";
+import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
 import "/src/styles/MessageInput.css"
-import {sendGroupMessage, sendMessage} from "api/messageApi.js";
-import {useChatContext, useLoginContext} from "context/hooks.ts";
 import {useState} from "react";
 import {toast} from "react-toastify";
 

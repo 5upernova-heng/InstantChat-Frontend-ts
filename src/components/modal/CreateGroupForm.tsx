@@ -1,9 +1,9 @@
-import {GroupLevel} from "api/types.ts";
-import Input from "components/widgets/Input.tsx";
-import SelectButtonGroup from "components/widgets/SelectButtonGroup.jsx";
-import {useChatContext, useLoginContext} from "context/hooks.ts";
+import {GroupLevel} from "/src/api/types.ts";
+import Input from "/src/components/widgets/Input.tsx";
+import SelectButtonGroup from "/src/components/widgets/SelectButtonGroup.jsx";
+import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import STYLE from "/src/style.ts";
 import {toast} from "react-toastify";
-import STYLE from "style.ts";
 import MemberSelect from "./MemberSelect.tsx";
 
 function CreateGroupForm() {
