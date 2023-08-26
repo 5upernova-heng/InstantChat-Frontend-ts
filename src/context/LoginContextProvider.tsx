@@ -1,5 +1,5 @@
 import {login} from "api/loginApi.js";
-import {User} from "api/types.ts";
+import {Account, User} from "api/types.ts";
 import {useTimeContext} from "context/hooks.ts";
 import {createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -8,7 +8,7 @@ import {toast} from "react-toastify";
 export type LoginContextType = {
     token: string
     isLogin: boolean
-    tryLogin: (account: User) => Promise<void>
+    tryLogin: (account: Account) => Promise<void>
     quitLogin: () => void
     loginAccount: User
 }
@@ -28,7 +28,7 @@ function LoginContextProvider({children, isLogin, setLogin}: Props) {
     const [token, setToken] = useState<string>("");
     const navigate = useNavigate();
 
-    const tryLogin = async (account: User) => {
+    const tryLogin = async (account: Account) => {
         const {code, data} = await login(account);
         if (code) {
             const {jwt, user} = data;

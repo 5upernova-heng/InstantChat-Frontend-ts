@@ -5,7 +5,7 @@ type Props = {
     icon?: React.ReactNode,
     type?: string,
     label: string,
-    onChange: ChangeEventHandler,
+    onChange: ChangeEventHandler<HTMLInputElement>,
     value?: string,
     error?: string,
 };

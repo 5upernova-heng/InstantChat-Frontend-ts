@@ -1,8 +1,8 @@
 import request from "api/request";
-import {ApiResponse, User} from "api/types.ts";
+import {ApiResponse, RegisterForm} from "api/types.ts";
 import {apiRoot} from "config.json";
 
-export async function register(account: User): Promise<ApiResponse<null>> {
+export async function register(account: RegisterForm): Promise<ApiResponse<null>> {
     const {username, name, password} = account;
     console.log("API Called: register\n", account);
     const {data} = await request.post(`${apiRoot}/register`, {

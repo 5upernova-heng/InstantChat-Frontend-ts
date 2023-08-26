@@ -1,3 +1,15 @@
+export type Account = {
+    username: string
+    password: string
+}
+
+export type RegisterForm = {
+    username: string
+    name: string
+    password: string
+    passwordConfirm: string
+}
+
 export type User = {
     username: string
     password?: string
