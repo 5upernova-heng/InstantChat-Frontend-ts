@@ -27,6 +27,8 @@ export type Group = {
 
 export enum MessageType {single, group}
 
+export enum TabType {addFriends, joinGroup, createGroup}
+
 export type Message = {
     id1: number // sender
     id2: number // receiver, empty if it's a group message

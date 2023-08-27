@@ -1,5 +1,6 @@
 import {friendRequest} from "/src/api/friendApi";
-import {Group, MessageType, User} from "/src/api/types.ts";
+import {Group, TabType, User} from "/src/api/types.ts";
+import CreateGroupForm from "/src/components/modal/CreateGroupForm.tsx";
 import List from "/src/components/widgets/List.tsx";
 import UserCard from "/src/components/widgets/UserCard.tsx";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
@@ -7,8 +8,8 @@ import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 
 type Props = {
-    tab: MessageType
-    setTab: Dispatch<SetStateAction<MessageType>>
+    tab: TabType
+    setTab: Dispatch<SetStateAction<TabType>>
 }
 
 function AddConversation({tab, setTab}: Props) {
@@ -101,10 +102,13 @@ function AddConversation({tab, setTab}: Props) {
     }
 
     function render() {
-        if (tab === MessageType.single)
+        if (tab === TabType.addFriends)
             return <List title={"好友"} data={users} renderMethod={renderUser}/>
-        if (tab === MessageType.group)
+        if (tab === TabType.joinGroup)
             return <List title={"群聊"} data={groups} renderMethod={renderGroup}/>
+        if (tab === TabType.createGroup)
+            return <CreateGroupForm/>
+        return <></>
     }
 
 
