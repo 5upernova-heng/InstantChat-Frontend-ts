@@ -6,22 +6,22 @@ type Props<T> = {
     renderMethod: (item: T, index: number) => Element
 }
 
-function List<T>({title, data, renderMethod}: Props<T>) {
+function renderData<T>(title: string, data: T[], renderMethod: (item: T, index: number) => Element) {
     const fontStyle = "fw-bold fs-5 mb-0";
 
-    function renderData() {
-        if (data === undefined || data.length === 0)
-            return (
-                <p
-                    className={`${fontStyle} text-center`}
-                >{`暂无${title}`}</p>
-            );
-        return data.map(renderMethod);
-    }
+    if (data === undefined || data.length === 0)
+        return (
+            <p
+                className={`${fontStyle} text-center`}
+            >{`暂无${title}`}</p>
+        );
+    return data.map(renderMethod);
+}
 
+function List<T>({title, data, renderMethod}: Props<T>) {
     return (
         <>
-            <div className="py-2 d-flex flex-column gap-3">{renderData()}</div>
+            <div className="py-2 d-flex flex-column gap-3">{renderData<T>(title, data, renderMethod)}</div>
         </>
     );
 }
