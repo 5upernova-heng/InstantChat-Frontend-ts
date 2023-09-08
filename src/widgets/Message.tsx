@@ -1,6 +1,6 @@
-import Avatar from "/src/components/widgets/Avatar.jsx";
-import Time from "/src/components/widgets/Time.jsx";
 import STYLE, {UserType} from "/src/style.js";
+import Avatar from "/src/widgets/Avatar.jsx";
+import Time from "/src/widgets/Time.jsx";
 
 type User = {
     id: number

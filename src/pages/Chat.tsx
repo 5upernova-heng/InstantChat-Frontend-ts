@@ -1,13 +1,13 @@
 import {TabType} from "/src/api/types.ts";
-import MessageContainer from "/src/components/chat/MessageContainer.jsx";
-import MessageInput from "/src/components/chat/MessageInput.jsx";
-import AddConversation from "/src/components/modal/AddConversation.jsx";
 import RightBar from "/src/components/RightBar.jsx";
 import SideBar from "/src/components/SideBar.jsx";
 import TopBar from "/src/components/TopBar.jsx";
-import Modal from "/src/components/widgets/Modal.jsx";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import MessageContainer from "/src/features/chat/MessageContainer.jsx";
+import MessageInput from "/src/features/chat/MessageInput.jsx";
+import AddConversation from "/src/features/modal/AddConversation.jsx";
 import STYLE from "/src/style.ts";
+import Modal from "/src/widgets/Modal.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 

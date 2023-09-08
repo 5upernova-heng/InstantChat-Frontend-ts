@@ -1,10 +1,10 @@
 import {GroupLevel} from "/src/api/types.ts";
-import Input from "/src/components/widgets/Input.tsx";
-import SelectButtonGroup from "/src/components/widgets/SelectButtonGroup.jsx";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import MemberSelect from "/src/features/modal/MemberSelect.tsx";
 import STYLE from "/src/style.ts";
+import Input from "/src/widgets/Input.tsx";
+import SelectButtonGroup from "/src/widgets/SelectButtonGroup.jsx";
 import {toast} from "react-toastify";
-import MemberSelect from "./MemberSelect.tsx";
 
 function CreateGroupForm() {
     const {loginAccount} = useLoginContext();

@@ -1,9 +1,9 @@
 import {friendRequest} from "/src/api/friendApi";
 import {Group, TabType, User} from "/src/api/types.ts";
-import CreateGroupForm from "/src/components/modal/CreateGroupForm.tsx";
-import List from "/src/components/widgets/List.tsx";
-import UserCard from "/src/components/widgets/UserCard.tsx";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import CreateGroupForm from "/src/features/modal/CreateGroupForm.tsx";
+import List from "/src/widgets/List.tsx";
+import UserCard from "/src/widgets/UserCard.tsx";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 

@@ -1,6 +1,6 @@
 import {Chat} from "/src/api/types.ts";
-import Avatar from "/src/components/widgets/Avatar.jsx";
 import {useChatContext} from "/src/context/hooks.ts";
+import Avatar from "/src/widgets/Avatar.jsx";
 import {Modal} from "bootstrap"
 import {useEffect} from "react";
 

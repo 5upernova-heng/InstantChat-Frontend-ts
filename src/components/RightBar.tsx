@@ -2,9 +2,9 @@
 // 下方用于显示成员信息
 
 import {Group, MessageType, User} from "/src/api/types.ts";
-import Avatar from "/src/components/widgets/Avatar.jsx";
-import UserCard from "/src/components/widgets/UserCard.jsx";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import Avatar from "/src/widgets/Avatar.jsx";
+import UserCard from "/src/widgets/UserCard.jsx";
 import {useEffect, useState} from "react";
 
 function RightBar() {
