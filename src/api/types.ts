@@ -37,6 +37,14 @@ export type Message = {
     messageTime: string
 }
 
+export type NewMessage = {
+    id: number // sender
+    name: string
+    type: MessageType
+    messageText: string
+    messageTime: string
+}
+
 export type Chat = {
     id: number
     type: MessageType
