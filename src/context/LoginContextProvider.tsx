@@ -1,4 +1,4 @@
-import {login} from "/src/api/loginApi.js";
+import {loginApi} from "/src/api/loginApi.js";
 import {Account, User} from "/src/api/types.ts";
 import {useTimeContext} from "/src/context/hooks.ts";
 import {createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
@@ -29,7 +29,7 @@ function LoginContextProvider({children, isLogin, setLogin}: Props) {
     const navigate = useNavigate();
 
     const tryLogin = async (account: Account) => {
-        const {code, data} = await login(account);
+        const {code, data} = await loginApi(account);
         if (code) {
             const {jwt, user} = data;
             setToken(jwt);
