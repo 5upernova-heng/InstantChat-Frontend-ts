@@ -1,21 +1,17 @@
 import {friendRequest} from "/src/api/friendApi";
 import {Group, TabType, User} from "/src/api/types.ts";
-import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import {useChatContext, useLoginContext, useViewContext} from "/src/context/hooks.ts";
 import CreateGroupForm from "/src/features/modal/CreateGroupForm.tsx";
 import List from "/src/widgets/List.tsx";
 import UserCard from "/src/widgets/UserCard.tsx";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 
-type Props = {
-    tab: TabType
-    setTab: Dispatch<SetStateAction<TabType>>
-}
-
-function AddConversation({tab, setTab}: Props) {
+function AddConversation() {
     const [users, setUsers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
 
+    const {tab, setTab} = useViewContext()
     const {token, isLogin, loginAccount} = useLoginContext();
     const {friends, groups: addedGroups, joinGroup, allUsers, allGroups} = useChatContext();
 

@@ -3,6 +3,7 @@
 
 import {Group, MessageType, User} from "/src/api/types.ts";
 import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import {useViewContext} from "/src/pages/Chat.tsx";
 import Avatar from "/src/widgets/Avatar.jsx";
 import UserCard from "/src/widgets/UserCard.jsx";
 import {useEffect, useState} from "react";
@@ -10,11 +11,10 @@ import {useEffect, useState} from "react";
 function RightBar() {
     const {loginAccount} = useLoginContext();
     const {
-        mode, conversation, allUsers, findMembersById,
-        setConversation, chats, setChats, setMode,
-        newMessages, friendRequests, handleRequest,
+        allUsers, findMembersById, chats, setChats, newMessages, friendRequests, handleRequest,
         findUserById, joinGroup, leaveGroup, getGroupSize, findGroupById, deleteNewMessages,
     } = useChatContext();
+    const {mode, setMode, conversation, setConversation} = useViewContext()
 
     const [members, setMembers] = useState<User[]>([]);
     const [outsideUsers, setOutsideUsers] = useState<User[]>([]);

@@ -1,6 +1,7 @@
 import {ChatContext, ChatContextType} from "/src/context/ChatContextProvider.tsx";
 import {LoginContext, LoginContextType} from "/src/context/LoginContextProvider.tsx";
 import {TimeContext, TimeContextType} from "/src/context/TimeContextProvider.tsx";
+import {ViewContext, ViewContextType} from "/src/context/ViewContext.tsx";
 import {useContext} from "react";
 
 export function useTimeContext(): TimeContextType {
@@ -23,6 +24,14 @@ export function useChatContext(): ChatContextType {
     const context = useContext(ChatContext)
     if (!context) {
         throw new Error('useChatContext must be used within ChatContextProvider')
+    }
+    return context
+}
+
+export function useViewContext(): ViewContextType {
+    const context = useContext(ViewContext)
+    if (!context) {
+        throw new Error('useViewContext must be used within ViewContextProvider')
     }
     return context
 }
