@@ -37,7 +37,7 @@ export type Message = {
     messageTime: string
 }
 
-export type NewMessage = {
+export type Notification = {
     id: number // sender
     name: string
     type: MessageType

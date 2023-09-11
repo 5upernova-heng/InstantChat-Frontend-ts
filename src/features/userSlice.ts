@@ -1,10 +1,10 @@
 import {listFriends} from "/src/api/friendApi.ts";
 import {listGroups} from "/src/api/groupApi.ts";
 import {loginApi} from "/src/api/loginApi.ts";
-import {friendHistoryMessage, groupHistoryMessage} from "/src/api/messageApi.ts";
+import {friendHistoryMessage, groupHistoryMessage, newFriendMessages, newGroupMessages} from "/src/api/messageApi.ts";
 import {handleResponse} from "/src/api/request.ts";
-import {Account, Group, Message, NewMessage, User} from "/src/api/types.ts";
-import {AppDispatch} from "/src/app/store.ts";
+import {Account, Group, Message, MessageType, Notification, User} from "/src/api/types.ts";
+import {AppDispatch, RootState} from "/src/app/store.ts";
 import {formatDate} from "/src/features/utils.ts";
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 
@@ -23,7 +23,7 @@ type State = {
     friends: User[]
     groups: Group[]
     messages: Message[]
-    newMessages: NewMessage[]
+    newMessages: Notification[]
     friendRequests: User[]
 }
 
@@ -57,41 +57,58 @@ export const tryLogin = createAsyncThunk<{
 
     })
 
-export const fetchFriends = createAsyncThunk<User[], string, { dispatch: AppDispatch }>(
+export const fetchFriends = createAsyncThunk<User[], string, { state: RootState, dispatch: AppDispatch }>(
     'user/fetchFriends',
-    async (token, thunkAPI) => {
+    async (_, thunkAPI) => {
+        const {token} = thunkAPI.getState().user.login;
         const response = await listFriends(token);
         return await handleResponse(thunkAPI.dispatch, response)
     }
 )
 
-export const fetchGroups = createAsyncThunk<Group[], string, { dispatch: AppDispatch }>(
+export const fetchGroups = createAsyncThunk<Group[], string, { state: RootState, dispatch: AppDispatch }>(
     'user/fetchGroups',
-    async (token, thunkAPI) => {
-        const response = await listGroups(token)
-        return await handleResponse(thunkAPI.dispatch, response);
+    async (_, thunkAPI) => {
+        const {token} = thunkAPI.getState().user.login;
+        const response = await listGroups(token);
+        return await handleResponse(thunkAPI.dispatch, response)
     }
 )
 
-export const fetchHistoryFriendMessages = createAsyncThunk<{ userInfo: User[], messageList: Message[] }, {
-    friendId: number,
-    token: string
-}, { dispatch: AppDispatch }>(
+export const fetchHistoryFriendMessages = createAsyncThunk<{ userInfo: User[], messageList: Message[] },
+    number,
+    { state: RootState, dispatch: AppDispatch }>(
     'user/fetchHistoryFriendMessages',
-    async ({friendId, token}, thunkAPI) => {
+    async (friendId, thunkAPI) => {
+        const {token} = thunkAPI.getState().user.login;
         const response = await friendHistoryMessage(friendId, token);
         return await handleResponse(thunkAPI.dispatch, response)
     }
 )
 
-export const fetchHistoryGroupMessages = createAsyncThunk<{ userInfo: User[], messageList: Message[] }, {
-    groupId: number,
-    token: string
-}, { dispatch: AppDispatch }>(
+export const fetchHistoryGroupMessages = createAsyncThunk<{ userInfo: User[], messageList: Message[] },
+    number,
+    { state: RootState, dispatch: AppDispatch }>(
     'user/fetchHistoryGroupMessages',
-    async ({groupId, token}, thunkAPI) => {
+    async (groupId, thunkAPI) => {
+        const {token} = thunkAPI.getState().user.login;
         const response = await groupHistoryMessage(groupId, token)
         return await handleResponse(thunkAPI.dispatch, response)
+    }
+)
+
+export const fetchNewMessages = createAsyncThunk<Message[][], void,
+    { state: RootState, dispatch: AppDispatch }>(
+    'user/fetchNewMessages',
+    async (_, thunkAPI) => {
+        const {lastLoginTime, token} = thunkAPI.getState().user.login
+        const friendResponse = await newFriendMessages(lastLoginTime, token);
+        const groupResponse = await newGroupMessages(lastLoginTime, token);
+        return Promise.all([
+                handleResponse(thunkAPI.dispatch, friendResponse),
+                handleResponse(thunkAPI.dispatch, groupResponse)
+            ]
+        )
     }
 )
 
@@ -115,23 +132,28 @@ export const userSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(tryLogin.pending, (state) => {
-                const newState = structuredClone<State>(state)
-                newState.login.pending = true
-                return newState
+                return {
+                    ...state,
+                    login: {
+                        ...state.login,
+                        pending: true
+                    }
+                }
             })
             .addCase(tryLogin.fulfilled, (state, action) => {
-                const newState = structuredClone<State>(state)
                 const {response, loginTime} = action.payload
-                const {user, jwt} = response;
-                newState.login = {
-                    ...state.login,
-                    pending: false,
-                    loginAccount: user,
-                    token: jwt,
-                    isLogin: true,
-                    lastLoginTime: loginTime
+                const {user, jwt} = response
+                return {
+                    ...state,
+                    login: {
+                        ...state.login,
+                        pending: false,
+                        loginAccount: user,
+                        token: jwt,
+                        isLogin: true,
+                        lastLoginTime: loginTime
+                    }
                 }
-                return newState
             })
             .addCase(fetchFriends.fulfilled, (state, action) => {
                 return {...state, friends: action.payload}
@@ -144,6 +166,35 @@ export const userSlice = createSlice({
             })
             .addCase(fetchHistoryGroupMessages.fulfilled, (state, action) => {
                 return {...state, messages: action.payload.messageList}
+            })
+            .addCase(fetchNewMessages.fulfilled, (state, action) => {
+                // Merge two kinds of messages into one by time order
+                const messages: Notification[] = action.payload.flat()
+                    .sort((a, b) => {
+                        const timeA = new Date(a.messageTime).getTime();
+                        const timeB = new Date(b.messageTime).getTime();
+                        return timeB - timeA;
+                    })
+                    .map((message) => {
+                        const {id1, type, messageText, messageTime} = message
+                        let sender;
+                        if (type === MessageType.single)
+                            sender = state.friends.find((user) => user.id === id1)
+                        if (message.type === MessageType.group)
+                            sender = state.groups.find((group) => group.id === message.id1)
+                        if (sender && type) {
+                            return {
+                                id: id1,
+                                messageText,
+                                type,
+                                messageTime,
+                                name: sender.name
+                            }
+                        } else {
+                            throw new Error(`Can not find ${id1}`)
+                        }
+                    })
+                return {...state, newMessages: messages}
             })
     }
 })

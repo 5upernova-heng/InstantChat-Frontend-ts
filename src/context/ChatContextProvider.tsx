@@ -133,7 +133,7 @@ function ChatContextProvider({children}: Props) {
         const newMsgTmp = newMessages;
         const existId: number[] = [];
         newMsgTmp.map((newMsg) => {
-            if (newMsg.type === 0)
+            if (newMsg.type === MessageType.single)
                 existId.push(newMsg.id);
         })
 
