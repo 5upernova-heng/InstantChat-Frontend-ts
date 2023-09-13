@@ -1,72 +1,69 @@
 // 上方用于显示好友请求
 // 下方用于显示成员信息
 
-import {Group, MessageType, User} from "/src/api/types.ts";
+import {listAllUsers} from "/src/api/friendApi.ts";
+import {Action, Chat, Group, MessageType, User} from "/src/api/types.ts";
 import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
-import {RootState} from "/src/app/store.ts";
-import {useChatContext} from "/src/context/hooks.ts";
-import {switchConversation, switchMode} from "/src/features/viewSlice.ts";
+import {deleteNewMessage, handleFriendRequest, joinGroup, leaveGroup} from "/src/features/userSlice.ts";
+import {findById, getGroupMembers, getGroupSize} from "/src/features/utils.ts";
+import {switchChat, switchMode, updateChats} from "/src/features/viewSlice.ts";
 import Avatar from "/src/widgets/Avatar.jsx";
 import UserCard from "/src/widgets/UserCard.jsx";
-import {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import {useCallback, useEffect, useState} from "react";
 
 function RightBar() {
-    const {loginAccount} = useSelector((state: RootState) => state.user.login)
-    const {
-        allUsers, findMembersById, chats, setChats, newMessages, friendRequests, handleRequest,
-        findUserById, joinGroup, leaveGroup, getGroupSize, findGroupById, deleteNewMessages,
-    } = useChatContext();
-    const {mode, conversation} = useAppSelector(state => ({...state.view}))
+    const {loginAccount, token} = useAppSelector((state) => state.user.login)
+    const {friends, groups, newMessages, friendRequests} = useAppSelector(state => state.user)
+    const {chats} = useAppSelector(state => state.view)
+    const {mode, currentChat} = useAppSelector(state => ({...state.view}))
     const dispatch = useAppDispatch()
 
     const [members, setMembers] = useState<User[]>([]);
+    // user that can be invited to the group
     const [outsideUsers, setOutsideUsers] = useState<User[]>([]);
 
-    const loadMember = async () => {
+    const loadMember = useCallback(async () => {
         if (mode === 0) {
             setMembers([]);
             setOutsideUsers([]);
             return;
         }
-        const newMembers = await findMembersById(conversation);
+        const {code, data: allUsers} = await listAllUsers(token);
+        if (!code) throw new Error("List all user failed")
+        const newMembers = await getGroupMembers(currentChat.id, token);
         setMembers(newMembers);
-        console.log(allUsers);
-        console.log(newMembers);
         const outside = allUsers.filter((user) => {
             const index = newMembers.findIndex((member) => member.id === user.id);
-            console.log(index)
             return index === -1;
         })
-        console.log(outside);
         setOutsideUsers(outside);
 
-    }
+    }, [currentChat, mode, token])
     useEffect(
         () => {
-            loadMember();
-        }, [conversation]
+            loadMember().then();
+        }, [currentChat, loadMember]
     )
 
-    const jumpToChat = (entity: User | Group, type: MessageType) => {
-        if (entity.id === loginAccount.id && type === MessageType.single)
+    const jumpToChat = (dest: User | Group, type: MessageType) => {
+        if (dest.id === loginAccount.id && type === MessageType.single)
             return;
-
         dispatch(switchMode(type));
-        let flag = 0;
         chats.map((chat) => {
-            if (chat.id === entity.id) {
-                dispatch(switchConversation(chat.id));
-                flag = 1;
+            if (chat.id === dest.id) {
+                dispatch(switchChat(chat));
+                return
             }
         });
-        if (flag === 0) {
-            const newChats = chats;
-            newChats.push({id: entity.id, type: type, name: entity.name});
-            setChats(newChats);
-            dispatch(switchConversation(entity.id));
+        const newChat: Chat = {
+            id: dest.id,
+            name: dest.name,
+            type,
+            entity: dest,
         }
-        deleteNewMessages(entity.id, type);
+        dispatch(updateChats({friends, groups}))
+        dispatch(switchChat(newChat));
+        dispatch(deleteNewMessage({id: dest.id, type}));
     };
 
     const renderFriendRequest = () => {
@@ -80,11 +77,11 @@ function RightBar() {
                             <UserCard name={user.name}/>
                             <div className="d-flex justify-content-evenly gap-2">
                                 <button className="btn btn-sm btn-success shadow"
-                                        onClick={() => handleRequest(user.id, 1)}
+                                        onClick={() => dispatch(handleFriendRequest({user, action: Action.accept}))}
                                 ><i className="fa fa-check" aria-hidden="true"></i>
                                 </button>
                                 <button className="btn btn-sm btn-danger shadow"
-                                        onClick={() => handleRequest(user.id, 2)}
+                                        onClick={() => dispatch(handleFriendRequest({user, action: Action.reject}))}
                                 ><i className="fa fa-times" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -114,11 +111,10 @@ function RightBar() {
                             style={{cursor: "pointer"}}
                             className="px-2 d-flex align-items-center"
                             onClick={() => {
-                                console.log(newMessage.id);
                                 if (newMessage.type === MessageType.single)
-                                    jumpToChat(findUserById(newMessage.id), 0);
+                                    jumpToChat(findById(friends, newMessage.id), MessageType.single);
                                 else
-                                    jumpToChat(findGroupById(newMessage.id), 1);
+                                    jumpToChat(findById(groups, newMessage.id), MessageType.group);
                             }}
                         >
                             <UserCard name={newMessage.name}/>
@@ -145,11 +141,13 @@ function RightBar() {
                         </div>
                     ))}
                 </div>
-                <h5 className="text-end pe-3 text-secondary">{`${members.length}/${getGroupSize(conversation)}`}</h5>
+                <h5 className="text-end pe-3 text-secondary">
+                    {`${members.length}/${getGroupSize(groups, currentChat.id)}`}
+                </h5>
                 <div className="d-grid">
                     <button className="mt-lg-5 m-2 btn btn-danger"
                             onClick={() => {
-                                leaveGroup(conversation);
+                                dispatch(leaveGroup(currentChat.id));
                             }}
                     >退出群聊
                     </button>
@@ -167,10 +165,10 @@ function RightBar() {
                 <div className="d-flex flex-column gap-3">
                     {outsideUsers.map((user, index) => (
                         <span key={index} style={{cursor: "pointer"}}
-                              className="px-2 d-flex align-items-center" onClick={async () => {
-                            const code = await joinGroup(conversation, [user.id]);
-                            if (code) loadMember();
-                        }}>
+                              className="px-2 d-flex align-items-center" onClick={
+                            async () => {
+                                dispatch(joinGroup({group: currentChat.entity as Group, members: [user.id]}));
+                            }}>
                             <Avatar name={user.name} size={"sm"}/>
                         </span>
                     ))}

@@ -1,9 +1,9 @@
-import {listFriends} from "/src/api/friendApi.ts";
-import {listGroups} from "/src/api/groupApi.ts";
+import {getRequest, handleRequestApi, listFriends} from "/src/api/friendApi.ts";
+import {addMember, leaveGroupApi, listGroups} from "/src/api/groupApi.ts";
 import {loginApi} from "/src/api/loginApi.ts";
 import {friendHistoryMessage, groupHistoryMessage, newFriendMessages, newGroupMessages} from "/src/api/messageApi.ts";
 import {handleResponse} from "/src/api/request.ts";
-import {Account, Group, Message, MessageType, Notification, User} from "/src/api/types.ts";
+import {Account, Action, Group, Message, MessageType, Notification, User} from "/src/api/types.ts";
 import {AppDispatch, RootState} from "/src/app/store.ts";
 import {formatDate} from "/src/features/utils.ts";
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
@@ -14,7 +14,7 @@ type LoginState = {
     isLogin: boolean
     pending: boolean
     loginAccount: User
-    lastLoginTime: string
+    lastViewMessageTime: string
 }
 
 type State = {
@@ -33,7 +33,7 @@ const initialState: State = {
         token: "",
         pending: false,
         loginAccount: {username: "", id: -1, name: ""},
-        lastLoginTime: "1970-01-01 00:00:00"
+        lastViewMessageTime: "1970-01-01 00:00:00"
     },
     errors: [],
     friends: [],
@@ -57,7 +57,7 @@ export const tryLogin = createAsyncThunk<{
 
     })
 
-export const fetchFriends = createAsyncThunk<User[], string, { state: RootState, dispatch: AppDispatch }>(
+export const fetchFriends = createAsyncThunk<User[], void, { state: RootState, dispatch: AppDispatch }>(
     'user/fetchFriends',
     async (_, thunkAPI) => {
         const {token} = thunkAPI.getState().user.login;
@@ -66,7 +66,7 @@ export const fetchFriends = createAsyncThunk<User[], string, { state: RootState,
     }
 )
 
-export const fetchGroups = createAsyncThunk<Group[], string, { state: RootState, dispatch: AppDispatch }>(
+export const fetchGroups = createAsyncThunk<Group[], void, { state: RootState, dispatch: AppDispatch }>(
     'user/fetchGroups',
     async (_, thunkAPI) => {
         const {token} = thunkAPI.getState().user.login;
@@ -101,9 +101,9 @@ export const fetchNewMessages = createAsyncThunk<Message[][], void,
     { state: RootState, dispatch: AppDispatch }>(
     'user/fetchNewMessages',
     async (_, thunkAPI) => {
-        const {lastLoginTime, token} = thunkAPI.getState().user.login
-        const friendResponse = await newFriendMessages(lastLoginTime, token);
-        const groupResponse = await newGroupMessages(lastLoginTime, token);
+        const {lastViewMessageTime, token} = thunkAPI.getState().user.login
+        const friendResponse = await newFriendMessages(lastViewMessageTime, token);
+        const groupResponse = await newGroupMessages(lastViewMessageTime, token);
         return Promise.all([
                 handleResponse(thunkAPI.dispatch, friendResponse),
                 handleResponse(thunkAPI.dispatch, groupResponse)
@@ -111,6 +111,50 @@ export const fetchNewMessages = createAsyncThunk<Message[][], void,
         )
     }
 )
+
+export const fetchFriendRequests = createAsyncThunk<User[], void, { state: RootState, dispatch: AppDispatch }>(
+    'user/fetchFriendRequest',
+    async (_, thunkAPI) => {
+        const {token} = thunkAPI.getState().user.login;
+        const response = await getRequest(token);
+        return handleResponse(thunkAPI.dispatch, response)
+
+    }
+)
+
+export const handleFriendRequest = createAsyncThunk<void, {
+    user: User, action: Action
+}, { state: RootState, dispatch: AppDispatch }>(
+    'user/handleFriendRequest',
+    async ({user, action}, thunkAPI) => {
+        const response = await handleRequestApi(user.id, action, thunkAPI.getState().user.login.token);
+        await handleResponse(thunkAPI.dispatch, response)
+        thunkAPI.dispatch(fetchFriends)
+    }
+)
+
+export const joinGroup = createAsyncThunk<void,
+    { group: Group, members: number[] },
+    { state: RootState, dispatch: AppDispatch }>(
+    'user/joinGroup',
+    async ({group, members}, thunkAPI) => {
+        const token = thunkAPI.getState().user.login.token
+        const response = await addMember(group.id, members, token);
+        await handleResponse(thunkAPI.dispatch, response)
+        thunkAPI.dispatch(fetchGroups())
+    }
+)
+
+export const leaveGroup = createAsyncThunk<void, number, { state: RootState, dispatch: AppDispatch }>(
+    'user/leaveGroup',
+    async (groupId, thunkAPI) => {
+        const token = thunkAPI.getState().user.login.token;
+        const response = await leaveGroupApi(groupId, token);
+        await handleResponse(thunkAPI.dispatch, response)
+        thunkAPI.dispatch(fetchGroups())
+    }
+)
+
 
 export const userSlice = createSlice({
     name: 'user',
@@ -128,6 +172,11 @@ export const userSlice = createSlice({
                 isLogin: false,
             }
         }),
+        deleteNewMessage: (state, action: PayloadAction<{ id: number, type: MessageType }>) => {
+            const {id, type} = action.payload
+            const filtered = state.newMessages.filter((message) => !(message.id === id && message.type === type))
+            return {...state, newMessages: filtered}
+        }
     },
     extraReducers: builder => {
         builder
@@ -151,7 +200,7 @@ export const userSlice = createSlice({
                         loginAccount: user,
                         token: jwt,
                         isLogin: true,
-                        lastLoginTime: loginTime
+                        lastViewMessageTime: loginTime
                     }
                 }
             })
@@ -196,9 +245,12 @@ export const userSlice = createSlice({
                     })
                 return {...state, newMessages: messages}
             })
+            .addCase(fetchFriendRequests.fulfilled, (state, action) => {
+                return {...state, friendRequests: action.payload}
+            })
     }
 })
 
-export const {pushErrors, quitLogin} = userSlice.actions
+export const {pushErrors, quitLogin, deleteNewMessage} = userSlice.actions
 export default userSlice.reducer
 

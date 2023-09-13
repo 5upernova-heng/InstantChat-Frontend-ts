@@ -1,8 +1,9 @@
-import {friendRequest} from "/src/api/friendApi";
+import {friendRequest, listAllUsers} from "/src/api/friendApi";
+import {listAllGroups} from "/src/api/groupApi.ts";
 import {Group, TabType, User} from "/src/api/types.ts";
 import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
-import {useChatContext} from "/src/context/hooks.ts";
 import CreateGroupForm from "/src/features/modal/CreateGroupForm.tsx";
+import {joinGroup} from "/src/features/userSlice.ts";
 import {switchTab} from "/src/features/viewSlice.ts";
 import List from "/src/widgets/List.tsx";
 import UserCard from "/src/widgets/UserCard.tsx";
@@ -13,39 +14,53 @@ function AddConversation() {
     const [users, setUsers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
 
-    const {tab, token, isLogin, loginAccount} = useAppSelector(state => ({
+    const {tab} = useAppSelector(state => ({
+        ...state.view
+    }))
+    const {friends, groups: addedGroups} = useAppSelector(state => ({
+        ...state.user
+    }))
+    const {token, isLogin, loginAccount} = useAppSelector(state => ({
         ...state.user.login,
-        ...state.view,
     }))
     const dispatch = useAppDispatch()
-    const {friends, groups: addedGroups, joinGroup, allUsers, allGroups} = useChatContext();
 
     const tabs = ["添加好友", "添加群聊", "创建群聊"];
 
-    const loadUsers = useCallback(() => {
+    const loadUsers = useCallback(async () => {
         // delete self
+        const {code, data: allUsers} = await listAllUsers(token);
+        if (!code) {
+            toast("Get allUsers error");
+            return;
+        }
         const filteredUsers = allUsers.filter((user) => friends.findIndex(
             (friend) => user.id === friend.id || user.id === loginAccount.id) === -1)
         setUsers(filteredUsers);
-    }, [allUsers, friends, loginAccount.id])
+    }, [friends, loginAccount.id, token])
 
-    const loadGroups = useCallback(() => {
+    const loadGroups = useCallback(async () => {
+        const {code, data: allGroups} = await listAllGroups(token);
+        if (!code) {
+            toast("Get allGroups error");
+            return;
+        }
         const filterGroups = allGroups.filter((group) => addedGroups.findIndex(
             (addedGroup) => addedGroup.id === group.id) === -1)
         setGroups(filterGroups);
-    }, [addedGroups, allGroups])
+    }, [addedGroups, token])
 
     useEffect(() => {
         if (isLogin) {
-            loadUsers();
+            loadUsers().then();
         }
-    }, [isLogin, allUsers, loadUsers])
+    }, [isLogin, loadUsers])
 
     useEffect(() => {
         if (isLogin) {
-            loadGroups();
+            loadGroups().then();
         }
-    }, [isLogin, allGroups, loadGroups])
+    }, [isLogin, loadGroups])
 
     async function addFriend(id: number) {
         const {code} = await friendRequest(id, token);
@@ -80,7 +95,7 @@ function AddConversation() {
                 <UserCard name={user.name}/>
                 <button className="btn btn-sm btn-primary"
                         onClick={() => {
-                            addFriend(user.id);
+                            addFriend(user.id).then();
                         }}
                 >
                     发送请求
@@ -94,7 +109,7 @@ function AddConversation() {
                 <UserCard name={group.name}/>
                 <button className="btn btn-sm btn-primary"
                         onClick={() => {
-                            joinGroup(group.id, [loginAccount.id]);
+                            dispatch(joinGroup({group, members: [loginAccount.id]}));
                         }}>
                     加入群聊
                 </button>

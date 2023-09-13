@@ -1,6 +1,6 @@
 import {sendGroupMessage, sendMessage} from "/src/api/messageApi.js";
-import {useAppSelector} from "/src/app/hooks.ts";
-import {useChatContext} from "/src/context/hooks.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {fetchHistoryFriendMessages, fetchHistoryGroupMessages} from "/src/features/userSlice.ts";
 import "/src/styles/MessageInput.css"
 import {useState} from "react";
 import {toast} from "react-toastify";
@@ -8,11 +8,13 @@ import {toast} from "react-toastify";
 type Props = { disabled: boolean }
 
 function MessageInput({disabled}: Props) {
-    const {token, mode, conversation} = useAppSelector(state => ({
-        ...state.user.login,
+    const {mode, conversation} = useAppSelector(state => ({
         ...state.view
     }))
-    const {loadMessages} = useChatContext();
+    const {token} = useAppSelector(state => ({
+        ...state.user.login,
+    }))
+    const dispatch = useAppDispatch()
     const [message, setMessage] = useState("");
 
     const handleSubmit = async () => {
@@ -20,7 +22,7 @@ function MessageInput({disabled}: Props) {
             // user
             const {code, msg} = await sendMessage(conversation, message, token)
             if (code) {
-                loadMessages()
+                dispatch(fetchHistoryFriendMessages(conversation))
                 setMessage("");
             } else
                 toast(msg);
@@ -29,7 +31,7 @@ function MessageInput({disabled}: Props) {
         if (mode === 1) {
             const {code, msg} = await sendGroupMessage(conversation, message, token)
             if (code) {
-                loadMessages()
+                dispatch(fetchHistoryGroupMessages(conversation))
                 setMessage("");
             } else
                 toast(msg);

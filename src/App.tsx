@@ -16,7 +16,7 @@ function App() {
         if (!isLogin && document.location.pathname === "/chat")
             navigate("/login")
 
-    }, [navigate, document.location.pathname, isLogin])
+    }, [navigate, isLogin])
     const renderRoutes = useCallback(() => {
         const defaultPage = <Navigate to={isLogin ? "/chat" : "/login"}/>
         const rootPageRoute = <Route path={"/"} element={defaultPage}/>

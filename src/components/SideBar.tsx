@@ -1,43 +1,41 @@
-import {Chat} from "/src/api/types.ts";
-import {useChatContext} from "/src/context/hooks.ts";
+import {MessageType} from "/src/api/types.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {deleteNewMessage, fetchHistoryFriendMessages, fetchHistoryGroupMessages} from "/src/features/userSlice.ts";
+import {switchChat, switchMode, updateChats} from "/src/features/viewSlice.ts";
 import Avatar from "/src/widgets/Avatar.jsx";
 import {Modal} from "bootstrap"
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 
 function SideBar() {
     Modal;
 
-    const {
-        friends, groups, setConversation, setMode,
-        chats, setChats, deleteNewMessages
-    } = useChatContext();
+    const {friends, groups} = useAppSelector(state => state.user)
+    const {chats} = useAppSelector(state => state.view)
+    const dispatch = useAppDispatch()
+
+    const renderSideAvatars = useCallback(() => {
+        return chats.map((chat, index) =>
+            <div key={index} onClick={async () => {
+                // always set mode before conversation
+                if (chat.id)
+                    dispatch(switchMode(chat.type))
+                dispatch(switchChat(chat))
+                chat.type === MessageType.single ? dispatch(fetchHistoryFriendMessages(chat.id))
+                    : dispatch(fetchHistoryGroupMessages(chat.id))
+                dispatch(deleteNewMessage({id: chat.id, type: chat.type}));
+            }}>
+                <Avatar name={chat.name}/>
+            </div>
+        )
+    }, [chats, dispatch])
 
 
     useEffect(() => {
         // type 0 for user; 1 for group
         // the same as mode in ChatContext
-        const newChats: Chat[] = []
-        friends.map((friend) => newChats.push(
-            {id: friend.id, type: 0, name: friend.name}
-        ))
-        groups.map((group) => newChats.push(
-            {id: group.id, type: 1, name: group.name}
-        ))
-        setChats(newChats);
-    }, [friends, groups])
+        dispatch(updateChats({friends, groups}))
+    }, [dispatch, friends, groups])
 
-    const renderSideAvatars = () => {
-        return chats.map((chat, index) =>
-            <div key={index} onClick={async () => {
-                // always set mode before conversation
-                setMode(chat.type);
-                setConversation(chat.id);
-                deleteNewMessages(chat.id, chat.type);
-            }}>
-                <Avatar name={chat.name}/>
-            </div>
-        )
-    }
 
     return (<div className="d-flex flex-column align-items-center border-end gap-3 pt-2 p-2"
                  style={{

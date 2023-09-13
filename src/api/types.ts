@@ -49,6 +49,7 @@ export type Chat = {
     id: number
     type: MessageType
     name: string
+    entity: User | Group
 }
 
 export type ApiResponse<DataType> = {

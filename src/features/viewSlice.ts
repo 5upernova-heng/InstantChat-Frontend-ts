@@ -1,16 +1,21 @@
-import {MessageType, TabType} from "/src/api/types.ts";
+import {Chat, Group, MessageType, TabType, User} from "/src/api/types.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 type State = {
     tab: TabType
     mode: MessageType
-    conversation: number
+    currentChat: Chat
+    chats: Chat[]
 }
+
+const emptyUser: User = {id: -1, name: "", username: ""}
+const emptyChat: Chat = {id: -1, name: "", type: MessageType.single, entity: emptyUser}
 
 const initialState: State = {
     tab: 0,
     mode: 0,
-    conversation: -1
+    currentChat: emptyChat,
+    chats: []
 }
 
 export const viewSlice = createSlice({
@@ -23,12 +28,29 @@ export const viewSlice = createSlice({
         switchMode: (state, action: PayloadAction<MessageType>) => {
             return {...state, mode: action.payload}
         },
-        switchConversation: (state, action: PayloadAction<number>) => {
-            return {...state, conversation: action.payload}
+        switchChat: (state, action: PayloadAction<Chat>) => {
+            return {...state, currentChat: action.payload}
+        },
+        updateChats: (state, action: PayloadAction<{ friends: User[], groups: Group[] }>) => {
+            const {friends, groups} = action.payload;
+            const newChats: Chat[] = []
+            newChats.concat(friends.map((friend) => ({
+                id: friend.id,
+                type: MessageType.single,
+                name: friend.name,
+                entity: friend
+            })))
+            newChats.concat(groups.map((group) => ({
+                id: group.id,
+                type: MessageType.group,
+                name: group.name,
+                entity: group
+            })))
+            return {...state, chats: newChats}
         }
     }
 })
 
-export const {switchTab, switchMode, switchConversation} = viewSlice.actions
+export const {switchTab, switchMode, switchChat, updateChats} = viewSlice.actions
 
 export default viewSlice.reducer

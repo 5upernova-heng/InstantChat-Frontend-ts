@@ -1,3 +1,4 @@
+import {Group} from "/src/api/types.ts";
 import {useAppSelector} from "/src/app/hooks.ts";
 import RightBar from "/src/components/RightBar.jsx";
 import SideBar from "/src/components/SideBar.jsx";
@@ -6,29 +7,27 @@ import {useChatContext} from "/src/context/hooks.ts";
 import MessageContainer from "/src/features/chat/MessageContainer.jsx";
 import MessageInput from "/src/features/chat/MessageInput.jsx";
 import AddConversation from "/src/features/modal/AddConversation.jsx";
-import STYLE from "/src/style.ts";
 import Modal from "/src/widgets/Modal.jsx";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 
 
 function Chat() {
-    const {mode, tab, conversation, isLogin} = useAppSelector(state => ({
+    const {mode, tab, currentChat} = useAppSelector(state => ({
         ...state.view,
-        isLogin: state.user.login.isLogin
     }))
-    const {submitNewGroup, findUserById, findGroupById} = useChatContext();
+    const isLogin = useAppSelector(state => state.user.login.isLogin)
+    const {submitNewGroup} = useChatContext();
 
     const navigate = useNavigate();
-    const title = conversation === -1
+    const title = currentChat.id === -1
         ? "选择一个对话以开始聊天"
-        : (mode ? findGroupById(conversation).name
-                : findUserById(conversation).name
-        );
-    const label = conversation === -1
+        : currentChat.entity.name;
+    const label = currentChat.id === -1
         ? ""
-        : (mode ? `${STYLE.groupLevelLabel[findGroupById(conversation).level]} 级群聊`
+        : (mode ? `${(currentChat.entity as Group).level} 级群聊`
             : "私聊")
+
     useEffect(() => {
         if (!isLogin) {
             navigate("/login");
@@ -52,7 +51,7 @@ function Chat() {
                         }}>
                             <MessageContainer/>
                         </div>
-                        <MessageInput disabled={conversation === -1}/>
+                        <MessageInput disabled={currentChat.id === -1}/>
                     </div>
                     <div className="col-2 border-start">
                         <RightBar/>
