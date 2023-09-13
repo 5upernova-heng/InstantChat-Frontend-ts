@@ -1,17 +1,26 @@
-import {GroupLevel} from "/src/api/types.ts";
-import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
+import {Group, GroupLevel} from "/src/api/types.ts";
+import {useAppSelector} from "/src/app/hooks.ts";
 import MemberSelect from "/src/features/modal/MemberSelect.tsx";
 import STYLE from "/src/style.ts";
 import Input from "/src/widgets/Input.tsx";
 import SelectButtonGroup from "/src/widgets/SelectButtonGroup.jsx";
+import {Dispatch, SetStateAction, useCallback} from "react";
 import {toast} from "react-toastify";
 
-function CreateGroupForm() {
-    const {loginAccount} = useLoginContext();
-    const {newGroup, changeSubmitGroup} = useChatContext();
+type Props = {
+    newGroup: Group
+    setNewGroup: Dispatch<SetStateAction<Group>>
+}
 
-    const {id: userId} = loginAccount;
+
+function CreateGroupForm({newGroup, setNewGroup}: Props) {
+    const {id: userId} = useAppSelector(state => state.user.login.loginAccount)
     const {members, level} = newGroup;
+
+    const changeSubmitGroup = useCallback((updates: Partial<Group>) => {
+        const newData = {...newGroup, ...updates} as Group
+        setNewGroup(newData);
+    }, [newGroup, setNewGroup])
 
     const changeName = (name: string) => {
         changeSubmitGroup({name: name});

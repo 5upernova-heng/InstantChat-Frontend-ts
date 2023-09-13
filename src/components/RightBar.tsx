@@ -1,10 +1,9 @@
 // 上方用于显示好友请求
 // 下方用于显示成员信息
 
-import {listAllUsers} from "/src/api/friendApi.ts";
 import {Action, Chat, Group, MessageType, User} from "/src/api/types.ts";
 import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
-import {deleteNewMessage, handleFriendRequest, joinGroup, leaveGroup} from "/src/features/userSlice.ts";
+import {deleteNewMessage, fetchAllUsers, handleFriendRequest, joinGroup, leaveGroup} from "/src/features/userSlice.ts";
 import {findById, getGroupMembers, getGroupSize} from "/src/features/utils.ts";
 import {switchChat, switchMode, updateChats} from "/src/features/viewSlice.ts";
 import Avatar from "/src/widgets/Avatar.jsx";
@@ -13,7 +12,7 @@ import {useCallback, useEffect, useState} from "react";
 
 function RightBar() {
     const {loginAccount, token} = useAppSelector((state) => state.user.login)
-    const {friends, groups, newMessages, friendRequests} = useAppSelector(state => state.user)
+    const {friends, groups, allUsers, newMessages, friendRequests} = useAppSelector(state => state.user)
     const {chats} = useAppSelector(state => state.view)
     const {mode, currentChat} = useAppSelector(state => ({...state.view}))
     const dispatch = useAppDispatch()
@@ -28,8 +27,7 @@ function RightBar() {
             setOutsideUsers([]);
             return;
         }
-        const {code, data: allUsers} = await listAllUsers(token);
-        if (!code) throw new Error("List all user failed")
+        dispatch(fetchAllUsers(token))
         const newMembers = await getGroupMembers(currentChat.id, token);
         setMembers(newMembers);
         const outside = allUsers.filter((user) => {
@@ -38,7 +36,7 @@ function RightBar() {
         })
         setOutsideUsers(outside);
 
-    }, [currentChat, mode, token])
+    }, [allUsers, currentChat.id, dispatch, mode, token])
     useEffect(
         () => {
             loadMember().then();

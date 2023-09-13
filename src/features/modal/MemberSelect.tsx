@@ -1,5 +1,5 @@
 import {User} from "/src/api/types.ts";
-import {useChatContext} from "/src/context/hooks.ts";
+import {useAppSelector} from "/src/app/hooks.ts";
 
 type Props = {
     members: number[]
@@ -7,7 +7,7 @@ type Props = {
 }
 
 function MemberSelect({members, toggleMember}: Props) {
-    const {allUsers: users} = useChatContext()
+    const {allUsers: users} = useAppSelector(state => state.user)
 
     function renderUsers(users: User[]) {
         return users.map((user, index) => {

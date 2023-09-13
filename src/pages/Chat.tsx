@@ -1,23 +1,24 @@
 import {Group} from "/src/api/types.ts";
-import {useAppSelector} from "/src/app/hooks.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
 import RightBar from "/src/components/RightBar.jsx";
 import SideBar from "/src/components/SideBar.jsx";
 import TopBar from "/src/components/TopBar.jsx";
-import {useChatContext} from "/src/context/hooks.ts";
 import MessageContainer from "/src/features/chat/MessageContainer.jsx";
 import MessageInput from "/src/features/chat/MessageInput.jsx";
 import AddConversation from "/src/features/modal/AddConversation.jsx";
+import {createNewGroup} from "/src/features/userSlice.ts";
 import Modal from "/src/widgets/Modal.jsx";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
 
 function Chat() {
-    const {mode, tab, currentChat} = useAppSelector(state => ({
-        ...state.view,
-    }))
-    const isLogin = useAppSelector(state => state.user.login.isLogin)
-    const {submitNewGroup} = useChatContext();
+    const {mode, tab, currentChat} = useAppSelector(state => ({...state.view,}))
+    const {isLogin} = useAppSelector(state => state.user.login)
+
+    const [newGroup, setNewGroup] = useState<Group>({id: -1, name: "", members: [], level: 0, totalMembers: 0})
+
+    const dispatch = useAppDispatch()
 
     const navigate = useNavigate();
     const title = currentChat.id === -1
@@ -61,14 +62,14 @@ function Chat() {
             <Modal id={"addConversation"}
                    headerLabel={"添加好友 / 群聊"}
                    bodyComponent={
-                       <AddConversation/>
+                       <AddConversation newGroup={newGroup} setNewGroup={setNewGroup}/>
                    }
                    footerComponent={
                        <>
                            {tab < 2 ||
                                <button className="btn btn-success"
                                        data-bs-dismiss="modal"
-                                       onClick={submitNewGroup}
+                                       onClick={() => dispatch(createNewGroup(newGroup))}
                                >添加</button>
                            }
                            <button className="btn btn-secondary" data-bs-dismiss="modal">取消

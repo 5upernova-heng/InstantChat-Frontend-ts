@@ -1,5 +1,5 @@
-import {getRequest, handleRequestApi, listFriends} from "/src/api/friendApi.ts";
-import {addMember, leaveGroupApi, listGroups} from "/src/api/groupApi.ts";
+import {getRequest, handleRequestApi, listAllUsers, listFriends} from "/src/api/friendApi.ts";
+import {addMember, createGroup, leaveGroupApi, listAllGroups, listGroups} from "/src/api/groupApi.ts";
 import {loginApi} from "/src/api/loginApi.ts";
 import {friendHistoryMessage, groupHistoryMessage, newFriendMessages, newGroupMessages} from "/src/api/messageApi.ts";
 import {handleResponse} from "/src/api/request.ts";
@@ -22,6 +22,8 @@ type State = {
     errors: string[]
     friends: User[]
     groups: Group[]
+    allUsers: User[],
+    allGroups: Group[],
     messages: Message[]
     newMessages: Notification[]
     friendRequests: User[]
@@ -38,6 +40,8 @@ const initialState: State = {
     errors: [],
     friends: [],
     groups: [],
+    allUsers: [],
+    allGroups: [],
     messages: [],
     newMessages: [],
     friendRequests: [],
@@ -155,6 +159,32 @@ export const leaveGroup = createAsyncThunk<void, number, { state: RootState, dis
     }
 )
 
+export const createNewGroup = createAsyncThunk<void, Group, { state: RootState, dispatch: AppDispatch }>(
+    'user/createNewGroup',
+    async (group, thunkAPI) => {
+        const token = thunkAPI.getState().user.login.token;
+        const response = await createGroup(group, token);
+        await handleResponse(thunkAPI.dispatch, response)
+        thunkAPI.dispatch(fetchGroups())
+        thunkAPI.dispatch(fetchAllUsers(token))
+    }
+)
+
+export const fetchAllUsers = createAsyncThunk<User[], string, { dispatch: AppDispatch }>(
+    'user/fetchAllUsers',
+    async (token, thunkAPI) => {
+        const response = await listAllUsers(token);
+        return handleResponse(thunkAPI.dispatch, response)
+    }
+)
+
+export const fetchAllGroups = createAsyncThunk<Group[], string, { dispatch: AppDispatch }>(
+    'user/fetchAllGroups',
+    async (token, thunkAPI) => {
+        const response = await listAllGroups(token);
+        return handleResponse(thunkAPI.dispatch, response)
+    }
+)
 
 export const userSlice = createSlice({
     name: 'user',
@@ -247,6 +277,12 @@ export const userSlice = createSlice({
             })
             .addCase(fetchFriendRequests.fulfilled, (state, action) => {
                 return {...state, friendRequests: action.payload}
+            })
+            .addCase(fetchFriends.fulfilled, (state, action) => {
+                return {...state, allUsers: action.payload}
+            })
+            .addCase(fetchGroups.fulfilled, (state, action) => {
+                return {...state, allGroups: action.payload}
             })
     }
 })

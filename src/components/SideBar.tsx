@@ -31,8 +31,6 @@ function SideBar() {
 
 
     useEffect(() => {
-        // type 0 for user; 1 for group
-        // the same as mode in ChatContext
         dispatch(updateChats({friends, groups}))
     }, [dispatch, friends, groups])
 

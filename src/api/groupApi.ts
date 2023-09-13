@@ -1,11 +1,12 @@
 import request from "/src/api/request";
-import {ApiResponse, Group, GroupLevel, User} from "/src/api/types.ts";
+import {ApiResponse, Group, User} from "/src/api/types.ts";
 import {apiRoot} from "/src/config.json";
 
 
-export async function creatGroup(name: string, level: GroupLevel, members: number[], token: string):
+export async function createGroup(group: Group, token: string):
     Promise<ApiResponse<null>> {
-    console.log("API Called: creatGroup\n", name, level, members);
+    const {name, level, members} = group;
+    console.log("API Called: createGroup\n", name, level, members);
     const {data} = await request.post(`${apiRoot}/group/create`, {
         groupname: name,
         level,
