@@ -1,6 +1,6 @@
 import {MessageType} from "/src/api/types.ts";
-import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
-import {useViewContext} from "/src/pages/Chat.tsx";
+import {useAppSelector} from "/src/app/hooks.ts";
+import {useChatContext} from "/src/context/hooks.ts";
 import Message from "/src/widgets/Message.jsx";
 import {useCallback, useEffect, useState} from "react";
 
@@ -11,9 +11,11 @@ type ParsedMessage = {
 }
 
 function MessageContainer() {
-    const {loginAccount} = useLoginContext()
     const {findUserById, messages} = useChatContext();
-    const {mode} = useViewContext()
+    const {mode, loginAccount} = useAppSelector(state => ({
+        mode: state.view.mode,
+        loginAccount: state.user.login.loginAccount
+    }))
 
     const [parsedMessage, setParsedMessage] = useState<ParsedMessage[]>([]);
 

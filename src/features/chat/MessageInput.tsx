@@ -1,6 +1,6 @@
 import {sendGroupMessage, sendMessage} from "/src/api/messageApi.js";
-import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
-import {useViewContext} from "/src/pages/Chat.tsx";
+import {useAppSelector} from "/src/app/hooks.ts";
+import {useChatContext} from "/src/context/hooks.ts";
 import "/src/styles/MessageInput.css"
 import {useState} from "react";
 import {toast} from "react-toastify";
@@ -8,9 +8,11 @@ import {toast} from "react-toastify";
 type Props = { disabled: boolean }
 
 function MessageInput({disabled}: Props) {
-    const {token} = useLoginContext();
+    const {token, mode, conversation} = useAppSelector(state => ({
+        ...state.user.login,
+        ...state.view
+    }))
     const {loadMessages} = useChatContext();
-    const {mode, conversation} = useViewContext()
     const [message, setMessage] = useState("");
 
     const handleSubmit = async () => {

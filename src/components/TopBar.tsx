@@ -1,9 +1,11 @@
-import {useLoginContext} from "/src/context/hooks.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {quitLogin} from "/src/features/userSlice.ts";
 import Avatar from "/src/widgets/Avatar.jsx";
 
 
 function TopBar() {
-    const {loginAccount, quitLogin} = useLoginContext();
+    const {loginAccount} = useAppSelector((state) => state.user.login);
+    const dispatch = useAppDispatch()
     const {name} = loginAccount;
     return (
         <div className="d-flex border-bottom justify-content-between align-items-center px-3"
@@ -24,7 +26,7 @@ function TopBar() {
             <div className="d-flex justify-content-evenly align-items-center gap-3">
                 <Avatar name={name} size={"md"}/>
                 <h3 className="mb-0 fw-bold">{name}</h3>
-                <button className="btn" onClick={() => quitLogin()}>
+                <button className="btn" onClick={() => dispatch(quitLogin)}>
                     <i className="fa fa-2x fa-sign-out" aria-hidden="true"></i>
                 </button>
             </div>

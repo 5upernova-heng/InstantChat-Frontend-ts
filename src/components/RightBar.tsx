@@ -2,19 +2,23 @@
 // 下方用于显示成员信息
 
 import {Group, MessageType, User} from "/src/api/types.ts";
-import {useChatContext, useLoginContext} from "/src/context/hooks.ts";
-import {useViewContext} from "/src/pages/Chat.tsx";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {RootState} from "/src/app/store.ts";
+import {useChatContext} from "/src/context/hooks.ts";
+import {switchConversation, switchMode} from "/src/features/viewSlice.ts";
 import Avatar from "/src/widgets/Avatar.jsx";
 import UserCard from "/src/widgets/UserCard.jsx";
 import {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
 
 function RightBar() {
-    const {loginAccount} = useLoginContext();
+    const {loginAccount} = useSelector((state: RootState) => state.user.login)
     const {
         allUsers, findMembersById, chats, setChats, newMessages, friendRequests, handleRequest,
         findUserById, joinGroup, leaveGroup, getGroupSize, findGroupById, deleteNewMessages,
     } = useChatContext();
-    const {mode, setMode, conversation, setConversation} = useViewContext()
+    const {mode, conversation} = useAppSelector(state => ({...state.view}))
+    const dispatch = useAppDispatch()
 
     const [members, setMembers] = useState<User[]>([]);
     const [outsideUsers, setOutsideUsers] = useState<User[]>([]);
@@ -48,11 +52,11 @@ function RightBar() {
         if (entity.id === loginAccount.id && type === MessageType.single)
             return;
 
-        setMode(type);
+        dispatch(switchMode(type));
         let flag = 0;
         chats.map((chat) => {
             if (chat.id === entity.id) {
-                setConversation(chat.id);
+                dispatch(switchConversation(chat.id));
                 flag = 1;
             }
         });
@@ -60,7 +64,7 @@ function RightBar() {
             const newChats = chats;
             newChats.push({id: entity.id, type: type, name: entity.name});
             setChats(newChats);
-            setConversation(entity.id);
+            dispatch(switchConversation(entity.id));
         }
         deleteNewMessages(entity.id, type);
     };

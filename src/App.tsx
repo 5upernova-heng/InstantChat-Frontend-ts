@@ -1,35 +1,35 @@
-import ChatContextProvider from "/src/context/ChatContextProvider.jsx";
-import LoginContextProvider from "/src/context/LoginContextProvider.jsx";
-import TimeContextProvider from "/src/context/TimeContextProvider.jsx";
+import {useAppSelector} from "/src/app/hooks.ts";
 import Chat from "/src/pages/Chat.tsx";
 import Login from "/src/pages/Login.tsx";
 import Register from "/src/pages/Register.tsx";
 import "/src/styles/App.css"
-import {useState} from "react";
-import {Navigate, Route, Routes} from "react-router-dom";
+import {useCallback, useEffect} from "react";
+import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 
 
 function App() {
-    const [isLogin, setLogin] = useState(false);
-    const defaultPage = <Navigate to={isLogin ? "/chat" : "/login"}/>
-    const rootPageRoute = <Route path={"/"} element={defaultPage}/>
-    const renderRoutes = () => {
+    const {isLogin} = useAppSelector((state) => state.user.login)
+    const navigate = useNavigate()
+    useEffect(() => {
+        if (isLogin && document.location.pathname === "/login")
+            navigate("/chat")
+        if (!isLogin && document.location.pathname === "/chat")
+            navigate("/login")
+
+    }, [navigate, document.location.pathname, isLogin])
+    const renderRoutes = useCallback(() => {
+        const defaultPage = <Navigate to={isLogin ? "/chat" : "/login"}/>
+        const rootPageRoute = <Route path={"/"} element={defaultPage}/>
         return <Routes>
             {rootPageRoute}
             <Route path={"/chat"} element={<Chat/>}/>
             <Route path={"/login"} element={<Login/>}/>
             <Route path={"/register"} element={<Register/>}/>
         </Routes>
-    }
+    }, [isLogin])
     return (<>
         <div className="background"></div>
-        <TimeContextProvider>
-            <LoginContextProvider isLogin={isLogin} setLogin={setLogin}>
-                <ChatContextProvider>
-                    {renderRoutes()}
-                </ChatContextProvider>
-            </LoginContextProvider>
-        </TimeContextProvider>
+        {renderRoutes()}
     </>)
 }
 

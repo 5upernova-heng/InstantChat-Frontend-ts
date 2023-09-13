@@ -1,46 +1,51 @@
 import {friendRequest} from "/src/api/friendApi";
 import {Group, TabType, User} from "/src/api/types.ts";
-import {useChatContext, useLoginContext, useViewContext} from "/src/context/hooks.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {useChatContext} from "/src/context/hooks.ts";
 import CreateGroupForm from "/src/features/modal/CreateGroupForm.tsx";
+import {switchTab} from "/src/features/viewSlice.ts";
 import List from "/src/widgets/List.tsx";
 import UserCard from "/src/widgets/UserCard.tsx";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {toast} from "react-toastify";
 
 function AddConversation() {
     const [users, setUsers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
 
-    const {tab, setTab} = useViewContext()
-    const {token, isLogin, loginAccount} = useLoginContext();
+    const {tab, token, isLogin, loginAccount} = useAppSelector(state => ({
+        ...state.user.login,
+        ...state.view,
+    }))
+    const dispatch = useAppDispatch()
     const {friends, groups: addedGroups, joinGroup, allUsers, allGroups} = useChatContext();
 
     const tabs = ["添加好友", "添加群聊", "创建群聊"];
+
+    const loadUsers = useCallback(() => {
+        // delete self
+        const filteredUsers = allUsers.filter((user) => friends.findIndex(
+            (friend) => user.id === friend.id || user.id === loginAccount.id) === -1)
+        setUsers(filteredUsers);
+    }, [allUsers, friends, loginAccount.id])
+
+    const loadGroups = useCallback(() => {
+        const filterGroups = allGroups.filter((group) => addedGroups.findIndex(
+            (addedGroup) => addedGroup.id === group.id) === -1)
+        setGroups(filterGroups);
+    }, [addedGroups, allGroups])
 
     useEffect(() => {
         if (isLogin) {
             loadUsers();
         }
-    }, [isLogin, allUsers])
+    }, [isLogin, allUsers, loadUsers])
 
     useEffect(() => {
         if (isLogin) {
             loadGroups();
         }
-    }, [isLogin, allGroups])
-
-    function loadUsers() {
-        // delete self
-        const filteredUsers = allUsers.filter((user) => friends.findIndex(
-            (friend) => user.id === friend.id || user.id === loginAccount.id) === -1)
-        setUsers(filteredUsers);
-    }
-
-    function loadGroups() {
-        const filterGroups = allGroups.filter((group) => addedGroups.findIndex(
-            (addedGroup) => addedGroup.id === group.id) === -1)
-        setGroups(filterGroups);
-    }
+    }, [isLogin, allGroups, loadGroups])
 
     async function addFriend(id: number) {
         const {code} = await friendRequest(id, token);
@@ -57,7 +62,7 @@ function AddConversation() {
                             return (
                                 <button key={index}
                                         className={`btn border-bottom-0 rounded-bottom-0 rounded-top p-2 ${selected && "border"}`}
-                                        onClick={() => setTab(index)}>
+                                        onClick={() => dispatch(switchTab(index))}>
                                     <p className={`mb-0 ${selected && "text-primary"}`}>
                                         {t}
                                     </p>
