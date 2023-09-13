@@ -1,13 +1,15 @@
 import {Account} from "/src/api/types.ts";
-import {useLoginContext} from "/src/context/hooks.ts";
+import {useAppDispatch, useAppSelector} from "/src/app/hooks.ts";
+import {tryLogin} from "/src/features/userSlice.ts";
 import Input from "/src/widgets/Input";
 import Joi from "joi";
 import {ChangeEvent, useState} from "react";
 
 function LoginFormGroup() {
+    const dispatch = useAppDispatch()
+    const {pending} = useAppSelector((state) => state.user.login)
     const [account, setAccount] = useState<Account>({username: "", password: ""});
     const [errors, setErrors] = useState<{ [errorField: string]: string }>({});
-    const {tryLogin} = useLoginContext()
     const schema = Joi.object({
         username: Joi.string().min(3).max(20).required(),
         password: Joi.string()
@@ -32,7 +34,7 @@ function LoginFormGroup() {
             : {};
         setErrors(newErrors);
         if (error) return;
-        tryLogin(account);
+        dispatch(tryLogin(account));
     };
     return (
         <div style={{minWidth: "400px"}}>
@@ -55,6 +57,7 @@ function LoginFormGroup() {
             <div className="mt-5 d-flex justify-content-evenly align-items-center">
                 <button
                     className="btn btn-primary shadow"
+                    disabled={pending}
                     onClick={() => handleSubmit()}
                     onKeyDown={(e) => {
                         if (e.key === "enter") {
