@@ -43,16 +43,22 @@ function MessageContainer() {
 
     useEffect(() => {
         setParsedMessage(parseNewMessage());
-    }, [messages, parseNewMessage])
+    }, [messages])
 
     const renderMessages = useCallback(() => {
+        if (parsedMessage.length === 0)
+            return <h2 className="text-center">暂无消息</h2>
         return parsedMessage.map((message, index) => {
             const {id, messageText, messageTime} = message;
-            const role = id === loginAccount.id ? "user" : "others"
-            const user = findById(friends, id);
-            return <Message key={index} role={role} time={messageTime} message={messageText} user={user}/>
+            if (id === loginAccount.id) {
+                return <Message key={index} role={"user"} time={messageTime} message={messageText} user={loginAccount}/>
+            } else {
+                const user = findById(friends, id);
+                return <Message key={index} role={"others"} time={messageTime} message={messageText}
+                                user={user}/>
+            }
         })
-    }, [friends, loginAccount.id, parsedMessage])
+    }, [friends, loginAccount, parsedMessage])
     return (
         <div className="d-flex flex-column gap-3 py-3">
             {renderMessages()}

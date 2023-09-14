@@ -36,7 +36,8 @@ function RightBar() {
         })
         setOutsideUsers(outside);
 
-    }, [allUsers, currentChat.id, dispatch, mode, token])
+    }, [dispatch, currentChat.id, mode, token])
+
     useEffect(
         () => {
             loadMember().then();

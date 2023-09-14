@@ -278,10 +278,10 @@ export const userSlice = createSlice({
             .addCase(fetchFriendRequests.fulfilled, (state, action) => {
                 return {...state, friendRequests: action.payload}
             })
-            .addCase(fetchFriends.fulfilled, (state, action) => {
+            .addCase(fetchAllUsers.fulfilled, (state, action) => {
                 return {...state, allUsers: action.payload}
             })
-            .addCase(fetchGroups.fulfilled, (state, action) => {
+            .addCase(fetchAllGroups.fulfilled, (state, action) => {
                 return {...state, allGroups: action.payload}
             })
     }

@@ -20,19 +20,20 @@ function SideBar() {
                 if (chat.id)
                     dispatch(switchMode(chat.type))
                 dispatch(switchChat(chat))
-                chat.type === MessageType.single ? dispatch(fetchHistoryFriendMessages(chat.id))
+                chat.type === MessageType.single
+                    ? dispatch(fetchHistoryFriendMessages(chat.id))
                     : dispatch(fetchHistoryGroupMessages(chat.id))
                 dispatch(deleteNewMessage({id: chat.id, type: chat.type}));
             }}>
                 <Avatar name={chat.name}/>
             </div>
         )
-    }, [chats, dispatch])
+    }, [chats])
 
 
     useEffect(() => {
         dispatch(updateChats({friends, groups}))
-    }, [dispatch, friends, groups])
+    }, [friends, groups])
 
 
     return (<div className="d-flex flex-column align-items-center border-end gap-3 pt-2 p-2"

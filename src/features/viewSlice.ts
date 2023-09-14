@@ -34,18 +34,24 @@ export const viewSlice = createSlice({
         updateChats: (state, action: PayloadAction<{ friends: User[], groups: Group[] }>) => {
             const {friends, groups} = action.payload;
             const newChats: Chat[] = []
-            newChats.concat(friends.map((friend) => ({
-                id: friend.id,
-                type: MessageType.single,
-                name: friend.name,
-                entity: friend
-            })))
-            newChats.concat(groups.map((group) => ({
-                id: group.id,
-                type: MessageType.group,
-                name: group.name,
-                entity: group
-            })))
+            friends.map((friend) => {
+                const chat = {
+                    id: friend.id,
+                    type: MessageType.single,
+                    name: friend.name,
+                    entity: friend
+                }
+                newChats.push(chat)
+            })
+            groups.map((group) => {
+                const chat = {
+                    id: group.id,
+                    type: MessageType.group,
+                    name: group.name,
+                    entity: group
+                }
+                newChats.push(chat)
+            })
             return {...state, chats: newChats}
         }
     }

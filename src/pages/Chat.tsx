@@ -6,7 +6,8 @@ import TopBar from "/src/components/TopBar.jsx";
 import MessageContainer from "/src/features/chat/MessageContainer.jsx";
 import MessageInput from "/src/features/chat/MessageInput.jsx";
 import AddConversation from "/src/features/modal/AddConversation.jsx";
-import {createNewGroup} from "/src/features/userSlice.ts";
+import {createNewGroup, fetchAllGroups, fetchAllUsers, fetchFriends, fetchGroups} from "/src/features/userSlice.ts";
+import Style from "/src/style.ts";
 import Modal from "/src/widgets/Modal.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -14,7 +15,7 @@ import {useNavigate} from "react-router-dom";
 
 function Chat() {
     const {mode, tab, currentChat} = useAppSelector(state => ({...state.view,}))
-    const {isLogin} = useAppSelector(state => state.user.login)
+    const {isLogin, token} = useAppSelector(state => state.user.login)
 
     const [newGroup, setNewGroup] = useState<Group>({id: -1, name: "", members: [], level: 0, totalMembers: 0})
 
@@ -26,14 +27,19 @@ function Chat() {
         : currentChat.entity.name;
     const label = currentChat.id === -1
         ? ""
-        : (mode ? `${(currentChat.entity as Group).level} 级群聊`
+        : (mode ? `${Style.groupLevelLabel[(currentChat.entity as Group).level]} 级群聊`
             : "私聊")
 
     useEffect(() => {
         if (!isLogin) {
             navigate("/login");
+        } else {
+            dispatch(fetchFriends())
+            dispatch(fetchGroups())
+            dispatch(fetchAllUsers(token))
+            dispatch(fetchAllGroups(token))
         }
-    }, [isLogin, navigate])
+    }, [dispatch, isLogin, navigate, token])
 
     return (
         <>

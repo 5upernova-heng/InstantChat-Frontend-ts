@@ -8,30 +8,26 @@ import {toast} from "react-toastify";
 type Props = { disabled: boolean }
 
 function MessageInput({disabled}: Props) {
-    const {mode, conversation} = useAppSelector(state => ({
-        ...state.view
-    }))
-    const {token} = useAppSelector(state => ({
-        ...state.user.login,
-    }))
+    const {mode, currentChat} = useAppSelector(state => ({...state.view}))
+    const {token} = useAppSelector(state => ({...state.user.login,}))
     const dispatch = useAppDispatch()
     const [message, setMessage] = useState("");
 
     const handleSubmit = async () => {
         if (mode === 0) {
             // user
-            const {code, msg} = await sendMessage(conversation, message, token)
+            const {code, msg} = await sendMessage(currentChat.id, message, token)
             if (code) {
-                dispatch(fetchHistoryFriendMessages(conversation))
+                dispatch(fetchHistoryFriendMessages(currentChat.id))
                 setMessage("");
             } else
                 toast(msg);
             return;
         }
         if (mode === 1) {
-            const {code, msg} = await sendGroupMessage(conversation, message, token)
+            const {code, msg} = await sendGroupMessage(currentChat.id, message, token)
             if (code) {
-                dispatch(fetchHistoryGroupMessages(conversation))
+                dispatch(fetchHistoryGroupMessages(currentChat.id))
                 setMessage("");
             } else
                 toast(msg);

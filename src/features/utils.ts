@@ -27,8 +27,11 @@ export function findById<T extends { id: number }>(array: T[], id: number): T {
     const result = array.find((e) => e.id === id)
     if (result)
         return result
-    else
-        throw new Error(`Can not find ${id} in array`)
+    else {
+
+        console.log("array:", array)
+        throw new Error(`Can not find ${id} in ${array}`)
+    }
 }
 
 export async function getGroupMembers(id: number, token: string) {
