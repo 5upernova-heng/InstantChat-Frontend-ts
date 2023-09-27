@@ -21,7 +21,7 @@ function RegisterFormGroup() {
 
     const handleChange = ({target: input}: ChangeEvent<HTMLInputElement>) => {
         const {value, name} = input;
-        if (name !== "username" && name !== "password") return
+        if (name !== "username" && name !== "password" && name !== "name" && name !== "passwordConfirm") return
         form[name] = value;
         setForm(form);
     };
