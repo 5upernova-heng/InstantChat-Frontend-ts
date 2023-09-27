@@ -17,7 +17,7 @@ function TopBar() {
                         width: "5rem",
                         height: "5rem",
                     }}
-                    src="/src/assets/react.svg"
+                    src="/react.svg"
                     alt="Logo"
                     className="d-inline-block"
                 />
