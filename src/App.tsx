@@ -13,7 +13,7 @@ function App() {
     useEffect(() => {
         if (isLogin && document.location.pathname === "/login")
             navigate("/chat")
-        if (!isLogin && document.location.pathname === "/chat")
+        if (!isLogin && document.location.pathname !== "/login")
             navigate("/login")
 
     }, [navigate, isLogin])
