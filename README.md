@@ -7,5 +7,4 @@ Typescript version of [this project](https://github.com/5upernova-heng/InstantCh
 - [x] Use `useCallBack` and eslint to check its second argument
 - [x] Try to use redux to manage states
 - [x] Deploy to server
-- [ ] Change to tailwind css
-- [ ] Handle "Some chunks are larger than 500 kBs after minification"
+- [x] Handle "Some chunks are larger than 500 kBs after minification"
